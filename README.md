@@ -2,6 +2,7 @@
 
 A simple **Budget Planning App for Students** built with Python.  
 This project helps students manage their monthly income and expenses effectively.
+this project is deploy on render the link of render is below the local server link
 
 ---
 
@@ -84,6 +85,7 @@ python app.py
 ```
 
 Then open `http://127.0.0.1:5000/` in your browser.
+https://student-budget-planner-apps.onrender.com/
 
 ---
 
