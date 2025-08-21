@@ -1,0 +1,140 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Budget Planner</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <h1>Student Budget Planner</h1>
+        
+        <!-- Add Transaction Form -->
+        <div class="card">
+            <h2>+ Add Transaction</h2>
+            <form action="/add" method="post">
+                <div class="form-group">
+                    <label>Transaction Type</label>
+                    <div class="radio-group">
+                        <label>
+                            <input type="radio" name="type" value="Income" checked> Income
+                        </label>
+                        <label>
+                            <input type="radio" name="type" value="Expense"> Expense
+                        </label>
+                    </div>
+                </div>
+                
+                <div class="form-group">
+                    <label for="date">Date</label>
+                    <input type="date" id="date" name="date" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="category">Category</label>
+                    <select id="category" name="category" required>
+                        <option value="" disabled selected>Select a category</option>
+                        <option value="Salary">Salary</option>
+                        <option value="Food">Food</option>
+                        <option value="Rent">Rent</option>
+                        <option value="Transport">Transport</option>
+                        <option value="Entertainment">Entertainment</option>
+                        <option value="Utilities">Utilities</option>
+                        <option value="Other">Other</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="amount">Amount ($)</label>
+                    <input type="number" id="amount" name="amount" step="0.01" min="0" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="description">Description (Optional)</label>
+                    <input type="text" id="description" name="description" placeholder="Enter description...">
+                </div>
+                
+                <button type="submit" class="btn">Add Transaction</button>
+            </form>
+        </div>
+        
+        <!-- Financial Summary -->
+        <div class="card summary">
+            <h2>Financial Summary</h2>
+            <div class="summary-grid">
+                <div class="summary-item">
+                    <h3>Total Income</h3>
+                    <p class="income">${{ income|round(2) }}</p>
+                </div>
+                <div class="summary-item">
+                    <h3>Total Expenses</h3>
+                    <p class="expense">${{ expenses|round(2) }}</p>
+                </div>
+                <div class="summary-item">
+                    <h3>Current Balance</h3>
+                    <p class="balance">${{ balance|round(2) }}</p>
+                </div>
+            </div>
+            
+            {% if top_categories %}
+            <div class="top-categories">
+                <h3>Top Spending Categories</h3>
+                <ol>
+                    {% for category, amount in top_categories %}
+                    <li>{{ category }}: ${{ amount|round(2) }}</li>
+                    {% endfor %}
+                </ol>
+            </div>
+            {% endif %}
+        </div>
+        
+        <!-- Spending Chart -->
+        {% if chart_image %}
+        <div class="card chart">
+            <h2>Spending Visualization</h2>
+            <img src="data:image/png;base64,{{ chart_image }}" alt="Spending Chart">
+        </div>
+        {% endif %}
+        
+        <!-- Recent Transactions -->
+        <div class="card">
+            <h2>Recent Transactions</h2>
+            {% if recent_transactions %}
+            <table>
+                <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Category</th>
+                        <th>Type</th>
+                        <th>Amount</th>
+                        <th>Description</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for trans in recent_transactions|reverse %}
+                    <tr>
+                        <td>{{ trans['Date'] }}</td>
+                        <td>{{ trans['Category'] }}</td>
+                        <td>
+                            <span class="badge {{ 'income-badge' if trans['Type'] == 'Income' else 'expense-badge' }}">
+                                {{ trans['Type'] }}
+                            </span>
+                        </td>
+                        <td class="{{ 'income' if trans['Type'] == 'Income' else 'expense' }}">
+                            ${{ trans['Amount'] }}
+                        </td>
+                        <td>{{ trans['Description'] }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+            {% else %}
+            <p class="empty">No transactions yet. Add your first transaction above!</p>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>
+
